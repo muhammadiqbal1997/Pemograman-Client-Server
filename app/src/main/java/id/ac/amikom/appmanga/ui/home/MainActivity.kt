@@ -15,11 +15,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.buttonLogout.setOnClickListener {
-            AppmangaAuth.logout(this){
-                startActivity(Intent(this, AuthActivity::class.java))
-                finish()
-            }
-        }
+
     }
 }
