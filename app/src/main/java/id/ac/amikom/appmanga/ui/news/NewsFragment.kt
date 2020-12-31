@@ -2,31 +2,56 @@ package id.ac.amikom.appmanga.ui.news
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import id.ac.amikom.appmanga.R
+import id.ac.amikom.appmanga.databinding.FragmentNewsBinding
+import id.ac.amikom.appmanga.ui.home.MainActivity
 
 class NewsFragment : Fragment() {
-
-    companion object {
-        fun newInstance() = NewsFragment()
-    }
-
-    private lateinit var viewModel: NewsViewModel
+    private val parent: MainActivity by lazy { activity as MainActivity }
+    private lateinit var binding: FragmentNewsBinding
+    private val viewModel: NewsViewModel by lazy { NewsViewModel() }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_news, container, false)
+    ): View {
+        binding = FragmentNewsBinding.inflate(inflater, container, false).apply {
+            viewModel = this@NewsFragment.viewModel
+            lifecycleOwner = this@NewsFragment
+        }
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(NewsViewModel::class.java)
-        // TODO: Use the ViewModel
+        init()
+        observe()
+    }
+
+
+
+    private fun init() {
+        binding.recyclerView.adapter = NewsAdapter(parent)
+        viewModel.listNews()
+    }
+    private fun observe() {
+        viewModel.loading.observe(viewLifecycleOwner){
+
+        }
+
+        viewModel.actionState.observe(viewLifecycleOwner){
+            if (it.isConsumed){
+                Log.i("ActionState", "isConsumed")
+            } else if (!it.isSuccess){
+                Toast.makeText(parent, it.message, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
 }
